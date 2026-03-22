@@ -1,0 +1,109 @@
+# 镜遇 APP - GitHub Actions 自动构建指南
+
+> 不需要在自己电脑装任何开发工具，上传代码后 APK 自动构建好
+
+---
+
+## 第一步：创建 GitHub 仓库
+
+1. 打开 https://github.com
+2. 点右上角头像 → "Your repositories" → "New"
+3. 仓库名写 `jingyu-app`（随便填也行）
+4. 设为 **Private**（代码不想公开的话）
+5. 点 "Create repository"
+
+---
+
+## 第二步：上传代码
+
+在仓库页面，点 "uploading an existing file"，把压缩包里的所有文件拖进去，点 "Commit changes"。
+
+---
+
+## 第三步：开启自动构建
+
+1. 进入你的仓库 → 点 "Actions" 标签
+2. 点 "New workflow" → 点 "set up a workflow yourself"
+3. 全删掉里面的内容，复制下面这段代码粘贴进去：
+
+```yaml
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Setup Capacitor
+        run: |
+          npx cap init "镜遇" "com.jingyu.app" --web-dir=dist
+          npx cap add android
+
+      - name: Capacitor Sync
+        run: npx cap sync android
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: jingyu-app.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+4. 点右上角 "Start commit" → "Commit changes"
+
+---
+
+## 第四步：等待构建完成
+
+1. 点 "Actions" 标签 → 看到 "Build Android APK" 正在运行
+2. 点进去 → 等待 5-10 分钟
+3. 绿色勾勾出现 = 构建成功！
+
+---
+
+## 第五步：下载 APK
+
+1. 点 "Build Android APK" 那个 workflow
+2. 点顶部的 "build" 任务
+3. 往下滚找到 "Artifacts"（产物）
+4. 点 "jingyu-app.apk" 下载
+
+---
+
+## 完成！
+
+APK 下载到电脑后，传到手机安装即可 🎉
+
+---
+
+*有问题找旺财 🐶*
