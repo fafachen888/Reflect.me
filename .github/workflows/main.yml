@@ -25,7 +25,7 @@ jobs:
       - name: Build web app
         run: pnpm exec vite build
 
-      - name: Setup Capacitor
+      - name: Init Capacitor
         run: |
           pnpm exec cap init "镜遇" "com.jingyu.app" --web-dir=dist
           pnpm exec cap add android          
