@@ -22,16 +22,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install Capacitor
+        run: pnpm add -D @capacitor/cli @capacitor/core @capacitor/android
+
       - name: Build web app
         run: pnpm exec vite build
 
       - name: Init Capacitor
         run: |
-          pnpm exec cap init "镜遇" "com.jingyu.app" --web-dir=dist
-          pnpm exec cap add android          
+          npx cap init "镜遇" "com.jingyu.app" --web-dir=dist
+          npx cap add android          
 
       - name: Capacitor Sync
-        run: pnpm exec cap sync android
+        run: npx cap sync android
 
       - name: Set up JDK
         uses: actions/setup-java@v4
