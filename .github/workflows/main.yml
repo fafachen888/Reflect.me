@@ -23,15 +23,15 @@ jobs:
         run: pnpm install
 
       - name: Build web app
-        run: pnpm build
+        run: pnpm exec vite build
 
       - name: Setup Capacitor
         run: |
-          npx cap init "镜遇" "com.jingyu.app" --web-dir=dist
-          npx cap add android          
+          pnpm exec cap init "镜遇" "com.jingyu.app" --web-dir=dist
+          pnpm exec cap add android          
 
       - name: Capacitor Sync
-        run: pnpm cap sync android
+        run: pnpm exec cap sync android
 
       - name: Set up JDK
         uses: actions/setup-java@v4
